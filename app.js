@@ -17,10 +17,11 @@ function saveData(file, data) {
 }
 
 // Classes
-class Pedido { //pedido: ID único, ID do cliente, status e data do pedido
-    constructor(clienteId, status, dataDoPedido, tipoDePedido) {
+class Pedido { //pedido: ID único, ID do cliente, nome de usuário do cliente (introduzi), status e data do pedido
+    constructor(clienteId, usernameCliente, status, dataDoPedido, tipoDePedido) {
         this.id = uuidv4();
         this.clienteId = clienteId;
+        this.usernameCliente = usernameCliente;
         this.status = status;
         this.dataDoPedido = dataDoPedido;
         this.tipoDePedido = tipoDePedido; // Introduzi para categorizar os pedidos em delivery (entrega e retirada) e buffet (vai comer no restaurante)
@@ -38,7 +39,7 @@ class Funcionario { //funcionario: ID único, nome (introduzi), CPF, email, senh
     }
 }
 
-class Cliente { //cliente: ID único, nome, data de nascimento, CPF, email, endereço, senha, username e endereço
+class Cliente { //cliente: ID único, nome, data de nascimento, CPF, email, endereço (introduzi), senha e username
     constructor(nome, dataDeNascimento, cpf, email, endereco, senha, username) {
         this.id = uuidv4();
         this.nome = nome;
@@ -50,6 +51,7 @@ class Cliente { //cliente: ID único, nome, data de nascimento, CPF, email, ende
         this.username = username;
     }
 }
+
 
 class Produto { //produto: ID único (introduzi), data de validade, preço, quantidade em estoque, nome, descrição, alergenos (introduzi) e tipoDeProduto (introduzi para categorizar os produtos)
     constructor(dataDeValidade, preco, quantidadeNoEstoque, nome, descricao, alergenos, tipoDeProduto) {
@@ -127,19 +129,15 @@ class Sistema {
             const dataDeNascimento = readlineSync.question('Digite sua data de nascimento: ');
             const endereco = readlineSync.question('Digite seu endereço para entrega de pedidos: '); // Corrigido
             const usuario = new Cliente(nome, dataDeNascimento, cpf, email, endereco, password, username);
-            
-            const userWithType = { ...usuario, tipo: 'cliente' }; // Adiciona o tipo de usuário
 
             usersData.push(usuario);
             saveData('./users.json', usersData); // Salvar os dados no arquivo JSON para armazenamento
     
             console.log('Usuário cadastrado com sucesso!');
-            console.log('Dados do novo usuário:', userWithType); // Mostrar os dados do novo usuário
+            console.log('Dados do novo usuário:', usuario); // Mostrar os dados do novo usuário
 
         } else if (tipo === 'funcionario') {
             const usuario = new Funcionario(nome, cpf, email, password, username);
-            
-            const userWithType = { ...usuario, tipo: 'funcionario' }; // Adiciona o tipo de usuário
 
             usersData.push(usuario);
             saveData('./users.json', usersData); // Salvar os dados no arquivo JSON para armazenamento
@@ -152,37 +150,49 @@ class Sistema {
     }    
 
     funcionarioActions(funcionario) { // Funções para funcionários
-        const action = readlineSync.question('Escolha uma opção (Ver Meus Dados, Modificar Meus Dados, Ver Lista de Pedidos, Ver Lista de Produtos, Ver Lista de Clientes, Mudar status do pedido, Adicionar Produto, Editar Produto, Excluir Produto, Logout): ');
+        console.log('\nO que deseja fazer hoje?'); // Mudança feita para que ele possa escolher qual dado deseja modificar
+        console.log('1. Ver Meus Dados');
+        console.log('2. Modificar Meus Dados');
+        console.log('3. Ver Lista de Pedidos');
+        console.log('4. Ver Lista de Produtos');
+        console.log('5. Ver Lista de Clientes');
+        console.log('6. Mudar status do pedido');
+        console.log('7. Adicionar Produto');
+        console.log('8. Editar Produto');
+        console.log('9. Excluir Produto');
+        console.log('10. Logout');
+
+        const action = readlineSync.question('Escolha uma opção: ');
 
         switch(action) { // Switch case para cada opção de uso do sistema pelo funcionário (métodos)
-            case 'Ver Meus Dados':
+            case '1':
                 console.log(funcionario);
                 break;
-            case 'Modificar Meus Dados':
+            case '2':
                 this.modifyUserData(funcionario);
                 break;
-            case 'Ver Lista de Pedidos':
+            case '3':
                 this.viewOrders();
                 break;
-            case 'Ver Lista de Produtos':
+            case '4':
                 this.viewProducts();
                 break;
-            case 'Ver Lista de Clientes':
+            case '5':
                 this.viewClients();
                 break;
-            case 'Mudar status do pedido':
+            case '6':
                 this.changeOrderStatus();
                 break;
-            case 'Adicionar Produto':
+            case '7':
                 this.addProduct();
                 break;
-            case 'Editar Produto':
+            case '8':
                 this.editProduct();
                 break;
-            case 'Excluir Produto':
+            case '9':
                 this.deleteProduct();
                 break;
-            case 'Logout':
+            case '10':
                 return null;
         }
 
@@ -190,34 +200,45 @@ class Sistema {
     }
 
     clienteActions(cliente) { // Funções para clientes
-        const action = readlineSync.question('Escolha uma opção (Ver meus Dados, Modificar Meus Dados, Ver Lista de Produtos, Fazer pedido, Cancelar pedido, Ver meus pedidos, Avaliar pedido, Visualizar avaliações, Logout): ');
+        console.log('\nO que deseja fazer hoje?');  // Mudança feita para que ele possa escolher qual dado deseja modificar
+        console.log('1. Ver meus Dados');
+        console.log('2. Modificar Meus Dados');
+        console.log('3. Ver Lista de Produtos');
+        console.log('4. Fazer pedido');
+        console.log('5. Cancelar pedido');
+        console.log('6. Ver meus pedidos');
+        console.log('7. Avaliar pedido');
+        console.log('8. Visualizar avaliações');
+        console.log('9. Logout');
+
+        const action = readlineSync.question('\nEscolha uma opção: ');
 
         switch(action) { // Switch case para cada opção de uso do sistema pelo cliente 
-            case 'Ver meus Dados':
+            case '1':
                 console.log(cliente);
                 break;
-            case 'Modificar Meus Dados':
+            case '2':
                 this.modifyUserData(cliente);
                 break;
-            case 'Ver Lista de Produtos':
+            case '3':
                 this.viewProducts();
                 break;
-            case 'Fazer pedido':
+            case '4':
                 this.makeOrder(cliente);
                 break;
-            case 'Cancelar pedido':
+            case '5':
                 this.cancelOrder(cliente);
                 break;
-            case 'Ver meus pedidos':
+            case '6':
                 this.viewClientOrders(cliente);
                 break;
-            case 'Avaliar pedido':
+            case '7':
                 this.rateOrder(cliente);
                 break;
-            case 'Visualizar avaliações':
+            case '8':
                 this.viewRatings();
                 break;
-            case 'Logout':
+            case '9':
                 return null;
         }
 
@@ -286,10 +307,11 @@ class Sistema {
         console.log(stockData);
     }
 
-    viewClients() { // Função para visualizar os clientes
+    viewClients() { 
         console.log('Lista de Clientes:');
-        console.log(usersData.filter(u => u instanceof Cliente));
-    }
+        const clientes = usersData.filter(u => u.dataDeNascimento !== undefined);
+        console.log(clientes);
+    }    
 
     changeOrderStatus() { // Função para mudar o status do pedido
         const orderId = readlineSync.question('Digite o ID do pedido que deseja alterar: ');
@@ -381,7 +403,7 @@ class Sistema {
             return;
         }
     
-        const pedido = new Pedido(cliente.id, 'Em andamento', new Date().toISOString(), tipoDePedido);
+        const pedido = new Pedido(cliente.id, cliente.username, 'Em andamento', new Date().toISOString(), tipoDePedido);
     
         ordersData.push(pedido);
         produto.quantidadeNoEstoque--;

@@ -1,9 +1,9 @@
 [
   {
-    "id": "9cc571fc-093f-420d-ba07-9dd7e1692fd1",
-    "clienteId": "f25e8e2c-786b-4a7b-b837-d94d25d30a49",
+    "id": "675d970a-a764-44da-8187-a5141102835c",
+    "clienteId": "8c8302df-9af4-414d-95f1-51be45d6db24",
     "status": "Em andamento",
-    "dataDoPedido": "2024-08-02T18:52:04.043Z",
-    "tipoDePedido": "Restaurante"
+    "dataDoPedido": "2024-08-02T19:44:49.543Z",
+    "tipoDePedido": "Entrega"
   }
 ]
