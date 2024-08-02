@@ -1,1 +1,9 @@
-[]
+[
+  {
+    "id": "9cc571fc-093f-420d-ba07-9dd7e1692fd1",
+    "clienteId": "f25e8e2c-786b-4a7b-b837-d94d25d30a49",
+    "status": "Em andamento",
+    "dataDoPedido": "2024-08-02T18:52:04.043Z",
+    "tipoDePedido": "Restaurante"
+  }
+]

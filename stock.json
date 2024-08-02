@@ -1,10 +1,42 @@
 [
   {
-    "id": "16282e8d-ed7b-4885-a102-42c407cc0253",
+    "id": "70f3f6e6-b0ed-4b1e-b5ec-a108f194a042",
     "dataDeValidade": "10/08/2024",
-    "preco": 10,
-    "quantidadeNoEstoque": 10,
+    "preco": 10.2,
+    "quantidadeNoEstoque": 5,
     "nome": "Pudim Sabor & Arte",
-    "descricao": "Pudim de leite condensado com calda de caramelo, extremamente saboroso e cremoso"
+    "descricao": "Pudim cremoso de leite com calda de caramelo",
+    "alergenos": "Contém Proteína do leite",
+    "tipoDeProduto": "Sobremesas"
+  },
+  {
+    "id": "aebebe89-36f1-49f4-86aa-9262e4bb8edf",
+    "dataDeValidade": "7/08/2024",
+    "preco": 50,
+    "quantidadeNoEstoque": 10,
+    "nome": "Caponata (vegano)",
+    "descricao": "Prato feito com beringelas e aipo salteados em azeite, temperados com molho de omate, azeitonas, alcaparras, vinagre e açúcar. Acompanha torradas e biscoitos salgados",
+    "alergenos": "Contém derivados de soja e de cevada",
+    "tipoDeProduto": "Entradas"
+  },
+  {
+    "id": "faecbfc6-4b6d-4797-a742-c23f738de1da",
+    "dataDeValidade": "7/08/2024",
+    "preco": 72,
+    "quantidadeNoEstoque": 8,
+    "nome": "Strognoff de Filé Mignon",
+    "descricao": "Strognoff feito à lá Sabor & Arte, acompanha arroz, batata frita, salada  (alface, tomate, cebola e pepino). O strognoff contém champignon e é feito com filé mignon",
+    "alergenos": "Contém leite, glúten, soja e lactose",
+    "tipoDeProduto": "Prato Principal"
+  },
+  {
+    "id": "96cd7048-7301-4c8c-951e-3e5910c86d13",
+    "dataDeValidade": "05/08/2025",
+    "preco": 8,
+    "quantidadeNoEstoque": 50,
+    "nome": "Coca Cola - garrafa",
+    "descricao": "A famosa garrafa de vidro da Coca Cola.",
+    "alergenos": "Não contém alérgenos",
+    "tipoDeProduto": "Bebidas"
   }
 ]
