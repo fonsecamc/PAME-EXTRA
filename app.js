@@ -1,6 +1,5 @@
 // Bibliotecas
 import readlineSync from 'readline-sync'; // Biblioteca para interação com o usuário no terminal
-import { v4 as uuidv4 } from 'uuid'; // Biblioteca para gerar IDs únicos
 import fs from 'fs'; // Biblioteca para manipulação de arquivos (File System Module)
 
 // Função para carregar dados de um arquivo JSON
@@ -16,12 +15,50 @@ function saveData(file, data) {
     fs.writeFileSync(file, JSON.stringify(data, null, 2));
 }
 
+// Carregar dados
+const usersData = loadData('./users.json');
+const stockData = loadData('./stock.json');
+const ordersData = loadData('./orders.json');
+
+// Expressões regulares para validação de dados (datas, cpf e email)
+const cpfRegex = /^\d{11}$/;
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const dataNascimentoRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
+const dataValidadeRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
+
+// Função para validar a data de nascimento
+function isValidDate(dateString) {
+    const [day, month, year] = dateString.split('/').map(Number);
+    const date = new Date(year, month - 1, day);
+    return date && (date.getMonth() + 1) === month && date.getDate() === day && date.getFullYear() === year;
+}
+
+let ultimoIDuser = usersData.reduce((maiorId, user) => Math.max(maiorId, user.id), 0);
+
+function gerarIDuser() {
+    ultimoIDuser++;
+    return ultimoIDuser.toString();
+}
+
+let ultimoIDproduto = stockData.reduce((maiorId, produto) => Math.max(maiorId, produto.id), 0);
+
+function gerarIDproduto() {
+    ultimoIDproduto++;
+    return ultimoIDproduto.toString();
+}
+
+let ultimoIDpedido = ordersData.reduce((maiorId, pedido) => Math.max(maiorId, pedido.id), 0);
+
+function gerarIDpedido() {
+    ultimoIDpedido++;
+    return ultimoIDpedido.toString();
+}
+
 // Classes
 class Pedido { //pedido: ID único, ID do cliente, nome de usuário do cliente (introduzi), status e data do pedido
-    constructor(clienteId, usernameCliente, status, dataDoPedido, tipoDePedido) {
-        this.id = uuidv4();
+    constructor(clienteId, status, dataDoPedido, tipoDePedido) {
+        this.id = gerarIDpedido();
         this.clienteId = clienteId;
-        this.usernameCliente = usernameCliente;
         this.status = status;
         this.dataDoPedido = dataDoPedido;
         this.tipoDePedido = tipoDePedido; // Introduzi para categorizar os pedidos em delivery (entrega e retirada) e buffet (vai comer no restaurante)
@@ -30,7 +67,7 @@ class Pedido { //pedido: ID único, ID do cliente, nome de usuário do cliente (
 
 class Funcionario { //funcionario: ID único, nome (introduzi), CPF, email, senha e username
     constructor(nome, cpf, email, senha, username) {
-        this.id = uuidv4();
+        this.id = gerarIDuser();
         this.nome = nome;
         this.cpf = cpf;
         this.email = email;
@@ -41,7 +78,7 @@ class Funcionario { //funcionario: ID único, nome (introduzi), CPF, email, senh
 
 class Cliente { //cliente: ID único, nome, data de nascimento, CPF, email, endereço (introduzi), senha e username
     constructor(nome, dataDeNascimento, cpf, email, endereco, senha, username) {
-        this.id = uuidv4();
+        this.id = gerarIDuser(usersData);
         this.nome = nome;
         this.dataDeNascimento = dataDeNascimento;
         this.cpf = cpf;
@@ -52,10 +89,9 @@ class Cliente { //cliente: ID único, nome, data de nascimento, CPF, email, ende
     }
 }
 
-
 class Produto { //produto: ID único (introduzi), data de validade, preço, quantidade em estoque, nome, descrição, alergenos (introduzi) e tipoDeProduto (introduzi para categorizar os produtos)
     constructor(dataDeValidade, preco, quantidadeNoEstoque, nome, descricao, alergenos, tipoDeProduto) {
-        this.id = uuidv4();
+        this.id = gerarIDproduto(stockData);
         this.dataDeValidade = dataDeValidade;
         this.preco = preco;
         this.quantidadeNoEstoque = quantidadeNoEstoque;
@@ -66,11 +102,6 @@ class Produto { //produto: ID único (introduzi), data de validade, preço, quan
     }
 }
 
-// Carregar dados
-const usersData = loadData('./users.json');
-const stockData = loadData('./stock.json');
-const ordersData = loadData('./orders.json');
-
 // Classe do sistema (a classe mãe)
 class Sistema {
     start() {
@@ -78,11 +109,16 @@ class Sistema {
 
         while (true) {  // Loop principal de cadastro, login e opção de saída do programa
             if (!currentUser) {
-                const action = readlineSync.question('Escolha uma opção (Login, Cadastrar, Sair): ');
+                console.log('\nBem-vindo ao sistema!'); // Mudança feita para que ele possa escolher entre login e cadastro
+                console.log('1. Login');
+                console.log('2. Cadastrar');
+                console.log('3. Sair');
 
-                if (action === 'Login') {
+                const action = readlineSync.question('Escolha uma opção (nº): ');
+
+                if (action === '1') {
                     currentUser = this.login();
-                } else if (action === 'Cadastrar') {
+                } else if (action === '2') {
                     this.register();
                 } else {
                     console.log('Saindo do programa...');
@@ -117,16 +153,55 @@ class Sistema {
     }
 
     register() { // Função para cadastro 
-        const tipo = readlineSync.question('Escolha o tipo de usuário (funcionario, cliente): ');
+        console.log('\nEscolha o novo status do produto: ');
+        console.log('1. Funcionário');
+        console.log('2. Cliente');
+
+        const choice = readlineSync.question('Escolha uma opção (nº): '); // adicionada para escrever menos 
+
+        let tipo; // Variável para armazenar o tipo de usuário
+
+        switch (choice) {
+            case '1':
+                tipo = 'funcionario';
+                break;
+            case '2':
+                tipo = 'cliente';
+                break;
+            default:
+                console.log('Tipo de usuário inválido.');
+                return;
+        }
     
         const nome = readlineSync.question('Digite seu nome e último sobrenome: ');
-        const cpf = readlineSync.question('Digite seu CPF: ');
+        if (!nome.includes(' ')) { // Checando se colocou sobrenome
+            console.log('Nome deve conter pelo menos um sobrenome.');
+            return;
+        }
+
+        const cpf = readlineSync.question('Digite seu CPF (somente números): ');
+        if (!cpfRegex.test(cpf)) { // Checando se o CPF é válido
+            console.log('CPF inválido. Deve conter exatamente 11 dígitos.');
+            return;
+        }
+
         const email = readlineSync.question('Digite seu email: ');
+        if (!emailRegex.test(email)) { // Checando se o email é válido
+            console.log('Email inválido.');
+            return;
+        }
+
         const password = readlineSync.question('Digite a senha: ', { hideEchoBack: true }); // NÃO aparece o que digita por questões de segurança
         const username = readlineSync.question('Digite o nome de usuário: ');
     
         if (tipo === 'cliente') { // Se o tipo de usuário for cliente, adicionar a pergunta da data de nascimento e do endereço
-            const dataDeNascimento = readlineSync.question('Digite sua data de nascimento: ');
+            
+            const dataDeNascimento = readlineSync.question('Digite sua data de nascimento (DD/MM/YYYY): ');
+            if (!dataNascimentoRegex.test(dataDeNascimento) || !isValidDate(dataDeNascimento)) {
+                console.log('Data de nascimento inválida. Use o formato DD/MM/YYYY.');
+                return;
+            }
+
             const endereco = readlineSync.question('Digite seu endereço para entrega de pedidos: '); // Corrigido
             const usuario = new Cliente(nome, dataDeNascimento, cpf, email, endereco, password, username);
 
@@ -162,7 +237,7 @@ class Sistema {
         console.log('9. Excluir Produto');
         console.log('10. Logout');
 
-        const action = readlineSync.question('Escolha uma opção: ');
+        const action = readlineSync.question('Escolha uma opção (nº): ');
 
         switch(action) { // Switch case para cada opção de uso do sistema pelo funcionário (métodos)
             case '1':
@@ -211,7 +286,7 @@ class Sistema {
         console.log('8. Visualizar avaliações');
         console.log('9. Logout');
 
-        const action = readlineSync.question('\nEscolha uma opção: ');
+        const action = readlineSync.question('\nEscolha uma opção (nº): ');
 
         switch(action) { // Switch case para cada opção de uso do sistema pelo cliente 
             case '1':
@@ -322,7 +397,33 @@ class Sistema {
             return;
         }
 
-        order.status = readlineSync.question(`Digite o novo status do pedido (atual: ${order.status}): `) || order.status;
+        console.log('Escolha o novo status do produto: ');
+        console.log('1. Cancelado');
+        console.log('2. Em andamento');
+        console.log('3. Entregue');
+        console.log('4. Sair');
+
+        const choice = readlineSync.question('Escolha uma opção (nº): ');
+
+        let status; // Variável para armazenar o status do pedido
+
+        switch (choice) {
+            case '1':
+                order.status = 'Cancelado';
+                break;
+            case '2':
+                order.status = 'Em andamento';
+                break;
+            case '3':
+                order.status = 'Entregue';
+                break;
+            case '4':
+                console.log('Saindo da modificação de status. Ele permancerá o mesmo');
+                return;
+            default:
+                console.log('Opção inválida. Tente novamente.');
+        }
+
         saveData('./orders.json', ordersData);
 
         console.log('Status do pedido alterado com sucesso!');
@@ -330,13 +431,44 @@ class Sistema {
 
     addProduct() { // Função de adição de produto pelo funcionário 
         const dataDeValidade = readlineSync.question('Digite a data de validade do produto: ');
+        if (!dataValidadeRegex.test(dataDeValidade) || !isValidDate(dataDeValidade)) {
+            console.log('Data de Validade inválida. Use o formato DD/MM/YYYY.');
+            return;
+        }
+
         const preco = parseFloat(readlineSync.question('Digite o preço do produto: '));
         const quantidadeNoEstoque = parseInt(readlineSync.question('Digite a quantidade em estoque do produto: '), 10);
         const nome = readlineSync.question('Digite o nome do produto: ');
         const descricao = readlineSync.question('Digite a descrição do produto: ');
         const alergenos = readlineSync.question('Digite os alérgenos do produto (se houver): ');
-        const tipoDeProduto = readlineSync.question('Digite o tipo de produto (Entradas, Prato Principal, Sobremesas, Bebidas): ');
         
+        console.log('/nEscolha o tipo de produto: ');
+        console.log('1. Entrada');
+        console.log('2. Prato principal');
+        console.log('3. Sobremesa');
+        console.log('4. Bebida');
+
+        const choice = readlineSync.question('Escolha uma opção (nº): ');
+
+        let tipoDeProduto; // Variável para armazenar o tipo de produto
+
+        switch (choice) { // Switch case para cada opção de modificação de dados do usuário, pedindo o novo e mostrando o atual
+            case '1':
+                tipoDeProduto = 'Entrada';
+                break;
+            case '2':
+                tipoDeProduto = 'Prato Principal';
+                break;
+            case '3':
+                tipoDeProduto = 'Sobremesa';
+                break;
+            case '4':
+                tipoDeProduto = 'Bebidas';
+                break;
+            default:
+                console.log('Opção inválida. Tente novamente.'); // Caso a opção seja inválida
+        }
+
         const produto = new Produto(dataDeValidade, preco, quantidadeNoEstoque, nome, descricao, alergenos, tipoDeProduto);
 
         stockData.push(produto);
@@ -354,17 +486,85 @@ class Sistema {
             return;
         }
 
-        produto.dataDeValidade = readlineSync.question(`Digite a nova data de validade do produto (atual: ${produto.dataDeValidade}): `) || produto.dataDeValidade;
-        produto.preco = parseFloat(readlineSync.question(`Digite o novo preço do produto (atual: ${produto.preco}): `)) || produto.preco;
-        produto.quantidadeNoEstoque = parseInt(readlineSync.question(`Digite a nova quantidade em estoque do produto (atual: ${produto.quantidadeNoEstoque}): `), 10) || produto.quantidadeNoEstoque;
-        produto.nome = readlineSync.question(`Digite o novo nome do produto (atual: ${produto.nome}): `) || produto.nome;
-        produto.descricao = readlineSync.question(`Digite a nova descrição do produto (atual: ${produto.descricao}): `) || produto.descricao;
-        produto.alergenos = readlineSync.question(`Digite os novos alérgenos do produto (atual: ${produto.alergenos}): `) || produto.alergenos;
-        produto.tipoDeProduto = readlineSync.question(`Digite o novo tipo de produto (atual: ${produto.tipoDeProduto}): `) || produto.tipoDeProduto;
+        console.log('\nQual dado você deseja modificar?');  // Mudança feita para que ele possa escolher qual dado deseja modificar
+        console.log('1. Data de Validade');
+        console.log('2. Preço');
+        console.log('3. Quantidade em Estoque');
+        console.log('4. Nome');
+        console.log('5. Descrição');
+        console.log('6. Alergenos');
+        console.log('7. Tipo de Produto');
+        console.log('8. Sair');
+
+        const choice = readlineSync.question('Escolha uma opção: ');
+
+        switch (choice) { // Switch case para cada opção de modificação de dados do usuário, pedindo o novo e mostrando o atual
+            case '1':
+                produto.dataDeValidade = readlineSync.question(`Digite a nova data de validade do produto (atual: ${produto.dataDeValidade}): `) || produto.dataDeValidade;
+                if (!dataValidadeRegex.test(dataDeValidade) || !isValidDate(dataDeValidade)) {
+                    console.log('Data de Validade inválida. Use o formato DD/MM/YYYY.');
+                    return;
+                }
+                console.log('Data de Validade atualizada com sucesso!');
+                break;
+            case '2':
+                produto.preco = parseFloat(readlineSync.question(`Digite o novo preço do produto (atual: ${produto.preco}): `)) || produto.preco;
+                console.log('Preço atualizado com sucesso!');
+                break;
+            case '3':
+                produto.quantidadeNoEstoque = parseInt(readlineSync.question(`Digite a nova quantidade em estoque do produto (atual: ${produto.quantidadeNoEstoque}): `), 10) || produto.quantidadeNoEstoque;
+                console.log('Quantidade em Estoque atualizada com sucesso!');
+                break;
+            case '4':
+                produto.nome = readlineSync.question(`Digite o novo nome do produto (atual: ${produto.nome}): `) || produto.nome;
+                console.log('Nome atualizado com sucesso!');
+                break;
+            case '5':
+                produto.descricao = readlineSync.question(`Digite a nova descrição do produto (atual: ${produto.descricao}): `) || produto.descricao;
+                console.log('Descrição atualizada com sucesso!');
+                break;
+            case '6':
+                produto.alergenos = readlineSync.question(`Digite os novos alérgenos do produto (atual: ${produto.alergenos}): `) || produto.alergenos;
+                console.log('Alergenos atualizados com sucesso!');
+                break;
+            case '7':
+                console.log('Escolha o tipo de produto: ');
+                console.log('1. Entrada');
+                console.log('2. Prato principal');
+                console.log('3. Sobremesa');
+                console.log('4. Bebidas');
+
+                const choice = readlineSync.question('Escolha uma opção (nº): ');
+
+                switch (choice) { // Switch case para cada opção de modificação de dados do usuário, pedindo o novo e mostrando o atual
+                    case '1':
+                        produto.tipoDeProduto = 'Entrada';
+                        break;
+                    case '2':
+                        produto.tipoDeProduto = 'Prato Principal';
+                        break;
+                    case '3':
+                        produto.tipoDeProduto = 'Sobremesa';
+                        break;
+                    case '4':
+                        produto.tipoDeProduto = 'Bebida';
+                        break;
+            case '8':
+                saveData('./stock.json', stockData);
+                console.log('Saindo da modificação de dados.');
+                return;
+            default:
+                console.log('Opção inválida. Tente novamente.');
+            }
+
+        const produtoIndex = stockData.findIndex(p => p.id === produtoId);
+        stockData[produtoIndex] = produto;
+        
 
         saveData('./stock.json', stockData);
 
         console.log('Produto editado com sucesso!');
+        }
     }
 
     deleteProduct() { // Função para excluir o produto (seja por falta no estoque ou outros motivos do funcionário)
@@ -382,41 +582,76 @@ class Sistema {
         console.log('Produto excluído com sucesso!');
     }
 
-    makeOrder(cliente) { // Função para fazer o pedido (cliente)
-        const produtoNome = readlineSync.question('Digite o nome do produto que deseja pedir: ');
-        const produto = stockData.find(p => p.nome.toLowerCase() === produtoNome.toLowerCase());
-    
-        if (!produto) {
+    // Função para fazer o pedido
+    makeOrder(cliente) {
+        const produtoId = readlineSync.question('Digite o id que deseja pedir: ');
+        const produtoIndex = stockData.findIndex(p => p.id === produtoId);
+        
+        if (produtoIndex === -1) {
             console.log('Produto não encontrado.');
             return;
         }
-    
+
+        const produto = stockData[produtoIndex];
+
         if (produto.quantidadeNoEstoque <= 0) {
             console.log('Produto fora de estoque.');
             return;
         }
-    
-        const tipoDePedido = readlineSync.question('Digite o tipo de pedido (Entrega, Retirada, Restaurante): ');
-    
-        if (!['Entrega', 'Retirada', 'Restaurante'].includes(tipoDePedido)) {
-            console.log('Tipo de pedido inválido.');
-            return;
+
+        console.log('Escolha o tipo de pedido: ');
+        console.log('1. Entrega');
+        console.log('2. Retirada');
+        console.log('3. Irei comer no restaurante');
+        console.log('4. Cancelar');
+
+        const choice = readlineSync.question('Escolha uma opção (nº): ');
+
+        let tipoDePedido; // Variável para armazenar o tipo de pedido
+
+        switch (choice) {
+            case '1':
+                tipoDePedido = 'Entrega';
+                break;
+            case '2':
+                tipoDePedido = 'Retirada';
+                break;
+            case '3':
+                tipoDePedido = 'Restaurante';
+                break;
+            case '4':
+                console.log('Pedido cancelado.');
+                return;
+            default:
+                console.log('Opção inválida. Tente novamente.');
+                return;
         }
-    
-        const pedido = new Pedido(cliente.id, cliente.username, 'Em andamento', new Date().toISOString(), tipoDePedido);
-    
+
+        
+        const pedidoId = gerarIDpedido();
+        const pedido = {
+            id: pedidoId,
+            clienteId: cliente.id, 
+            status: 'Em andamento',
+            data: new Date().toISOString(),
+            tipoDePedido: tipoDePedido,
+            produtoId: produtoId,
+            quantidade: 1
+        };
+
         ordersData.push(pedido);
         produto.quantidadeNoEstoque--;
+
         saveData('./orders.json', ordersData);
         saveData('./stock.json', stockData);
-    
+
         console.log('Pedido realizado com sucesso!');
     }
     
 
     cancelOrder(cliente) { // Função para cancelar o pedido (cliente) 
         const orderId = readlineSync.question('Digite o ID do pedido que deseja cancelar: ');
-        const orderIndex = ordersData.findIndex(o => o.id === orderId && o.clienteId === cliente.id);
+        const orderIndex = stockData.findIndex(p => p.id === orderId);
 
         if (orderIndex === -1) {
             console.log('Pedido não encontrado ou não pertence ao cliente.');

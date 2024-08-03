@@ -1,9 +1,21 @@
 [
   {
-    "id": "675d970a-a764-44da-8187-a5141102835c",
-    "clienteId": "8c8302df-9af4-414d-95f1-51be45d6db24",
+    "id": "1",
+    "clienteId": "4",
+    "status": "Entregue",
+    "data": "2024-08-03T21:03:45.554Z",
+    "tipoDePedido": "Entrega",
+    "produtoId": "1",
+    "quantidade": 1,
+    "rating": 5
+  },
+  {
+    "id": "2",
+    "clienteId": "4",
     "status": "Em andamento",
-    "dataDoPedido": "2024-08-02T19:44:49.543Z",
-    "tipoDePedido": "Entrega"
+    "data": "2024-08-03T21:03:51.074Z",
+    "tipoDePedido": "Entrega",
+    "produtoId": "2",
+    "quantidade": 1
   }
 ]

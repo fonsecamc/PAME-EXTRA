@@ -1,40 +1,30 @@
 [
   {
-    "id": "f2870333-9f08-489a-9c37-b4227066fa1f",
-    "nome": "Mario Rodrigues",
-    "cpf": "123.456.789-00",
-    "email": "marior@gmail.co",
-    "senha": "aja99@",
+    "id": "1",
+    "nome": "Mário Rodrigues",
+    "cpf": "00000000000",
+    "email": "marior@gmail.com",
+    "senha": "a",
     "username": "marior"
   },
   {
-    "id": "08265da7-9a2d-429d-9292-17ece8f7a448",
+    "id": "3",
     "nome": "Ana Costa",
-    "dataDeNascimento": "18/03/1978",
-    "cpf": "18/03/1978",
+    "dataDeNascimento": "10/09/2000",
+    "cpf": "11111111111",
     "email": "anac@gmail.com",
     "endereco": "Rua Flores, 123",
-    "senha": "a67a!",
+    "senha": "b",
     "username": "anac"
   },
   {
-    "id": "25343186-7413-4e38-a985-2881cce71db8",
+    "id": "3",
     "nome": "Hugo Moura",
     "dataDeNascimento": "18/09/2001",
-    "cpf": "776.572.390-56",
+    "cpf": "77657239056",
     "email": "mourah@gmail.com",
     "endereco": "Rua Getúlio Vargas, 76",
     "senha": "gh89#",
     "username": "mourah"
-  },
-  {
-    "id": "c7ffc291-c445-4a6b-a40d-2dbc5de850b6",
-    "nome": "Guilhermo Varela",
-    "dataDeNascimento": "07/09/1980",
-    "cpf": "127.375.830-55",
-    "email": "varela@hotmail.com",
-    "endereco": "Rua Antônio Banderas, 88",
-    "senha": "yu89@",
-    "username": "varela"
   }
 ]
