@@ -1,21 +1,49 @@
 [
   {
-    "id": "1",
-    "clienteId": "4",
-    "status": "Entregue",
-    "data": "2024-08-03T21:03:45.554Z",
-    "tipoDePedido": "Entrega",
-    "produtoId": "1",
-    "quantidade": 1,
-    "rating": 5
-  },
-  {
     "id": "2",
     "clienteId": "4",
-    "status": "Em andamento",
+    "status": "Pedido Adiado",
     "data": "2024-08-03T21:03:51.074Z",
     "tipoDePedido": "Entrega",
     "produtoId": "2",
     "quantidade": 1
+  },
+  {
+    "id": "3",
+    "clienteId": "4",
+    "status": "Em andamento",
+    "data": "2024-08-03T21:26:14.817Z",
+    "tipoDePedido": "Restaurante",
+    "produtoId": "1",
+    "quantidade": 1
+  },
+  {
+    "id": "4",
+    "clienteId": "2",
+    "status": "Entregue",
+    "data": "2024-08-04T00:51:37.771Z",
+    "tipoDePedido": "Restaurante",
+    "produtoId": "5",
+    "quantidade": 1,
+    "rating": 5
+  },
+  {
+    "id": "5",
+    "clienteId": "2",
+    "status": "Em andamento",
+    "data": "2024-08-04T00:59:06.696Z",
+    "tipoDePedido": "Retirada",
+    "produtoId": "2",
+    "quantidade": 1
+  },
+  {
+    "id": "6",
+    "clienteId": "2",
+    "status": "Pedido pendente",
+    "data": "2024-08-04T01:43:09.953Z",
+    "tipoDePedido": "Restaurante",
+    "produtoId": "2",
+    "quantidade": 1,
+    "rating": 4
   }
 ]

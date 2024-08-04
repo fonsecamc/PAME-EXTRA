@@ -13,7 +13,7 @@
     "id": "2",
     "dataDeValidade": "10/08/2024",
     "preco": 100.5,
-    "quantidadeNoEstoque": 10,
+    "quantidadeNoEstoque": 8,
     "nome": "Strognoff de Filé Mignon",
     "descricao": "Strognoff feito à lá Sabor & Arte, acompanha arroz, batata frita, salada  (alface, tomate, cebola e pepino). O strognoff contém champignon e é feito com filé mignon",
     "alergenos": "Contém leite, glúten, soja e lactose",
@@ -38,5 +38,15 @@
     "descricao": "Delicioso suco de laranja natural, vem com gelo.",
     "alergenos": "Não contém alérgenos",
     "tipoDeProduto": "Bebida"
+  },
+  {
+    "id": "5",
+    "dataDeValidade": "10/08/2024",
+    "preco": 40,
+    "quantidadeNoEstoque": 14,
+    "nome": "Dadinho de Tapioca",
+    "descricao": "Deliciosos dadinhos feitos de tapioca, acompanha geléia de pimenta.",
+    "alergenos": "Contém derivados do leite",
+    "tipoDeProduto": "Entrada"
   }
 ]

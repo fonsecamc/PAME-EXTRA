@@ -33,31 +33,30 @@ function isValidDate(dateString) {
     return date && (date.getMonth() + 1) === month && date.getDate() === day && date.getFullYear() === year;
 }
 
-let ultimoIDuser = usersData.reduce((maiorId, user) => Math.max(maiorId, user.id), 0);
+// Função para obter o próximo ID disponível com base nos dados existentes
+function getNextId(data) {
+    if (data.length === 0) return '1'; // Se não houver dados, começa com ID 1
+    return (Math.max(...data.map(item => parseInt(item.id, 10))) + 1).toString();
+}
 
+// Função para gerar IDs para usuários
 function gerarIDuser() {
-    ultimoIDuser++;
-    return ultimoIDuser.toString();
+    return getNextId(usersData);
 }
 
-let ultimoIDproduto = stockData.reduce((maiorId, produto) => Math.max(maiorId, produto.id), 0);
-
+// Função para gerar IDs para produtos
 function gerarIDproduto() {
-    ultimoIDproduto++;
-    return ultimoIDproduto.toString();
+    return getNextId(stockData);
 }
-
-let ultimoIDpedido = ordersData.reduce((maiorId, pedido) => Math.max(maiorId, pedido.id), 0);
 
 function gerarIDpedido() {
-    ultimoIDpedido++;
-    return ultimoIDpedido.toString();
+    return getNextId(ordersData);
 }
 
 // Classes
 class Pedido { //pedido: ID único, ID do cliente, nome de usuário do cliente (introduzi), status e data do pedido
-    constructor(clienteId, status, dataDoPedido, tipoDePedido) {
-        this.id = gerarIDpedido();
+    constructor(id, clienteId, status, dataDoPedido, tipoDePedido) {
+        this.id = id;
         this.clienteId = clienteId;
         this.status = status;
         this.dataDoPedido = dataDoPedido;
@@ -66,8 +65,8 @@ class Pedido { //pedido: ID único, ID do cliente, nome de usuário do cliente (
 }
 
 class Funcionario { //funcionario: ID único, nome (introduzi), CPF, email, senha e username
-    constructor(nome, cpf, email, senha, username) {
-        this.id = gerarIDuser();
+    constructor(id, nome, cpf, email, senha, username) {
+        this.id = id;
         this.nome = nome;
         this.cpf = cpf;
         this.email = email;
@@ -77,8 +76,8 @@ class Funcionario { //funcionario: ID único, nome (introduzi), CPF, email, senh
 }
 
 class Cliente { //cliente: ID único, nome, data de nascimento, CPF, email, endereço (introduzi), senha e username
-    constructor(nome, dataDeNascimento, cpf, email, endereco, senha, username) {
-        this.id = gerarIDuser(usersData);
+    constructor(id, nome, dataDeNascimento, cpf, email, endereco, senha, username) {
+        this.id = id;
         this.nome = nome;
         this.dataDeNascimento = dataDeNascimento;
         this.cpf = cpf;
@@ -90,8 +89,8 @@ class Cliente { //cliente: ID único, nome, data de nascimento, CPF, email, ende
 }
 
 class Produto { //produto: ID único (introduzi), data de validade, preço, quantidade em estoque, nome, descrição, alergenos (introduzi) e tipoDeProduto (introduzi para categorizar os produtos)
-    constructor(dataDeValidade, preco, quantidadeNoEstoque, nome, descricao, alergenos, tipoDeProduto) {
-        this.id = gerarIDproduto(stockData);
+    constructor(id, dataDeValidade, preco, quantidadeNoEstoque, nome, descricao, alergenos, tipoDeProduto) {
+        this.id = id;
         this.dataDeValidade = dataDeValidade;
         this.preco = preco;
         this.quantidadeNoEstoque = quantidadeNoEstoque;
@@ -134,23 +133,23 @@ class Sistema {
         }
     }
 
-    login() { // Função para login
+    login() {
         const username = readlineSync.question('Digite seu nome de usuário: ');
         const password = readlineSync.question('Digite sua senha: ', { hideEchoBack: true });
-
+    
         const user = usersData.find(u => u.username === username);
-        if (user && user.senha === password) { 
+        if (user && user.senha === password) {
             console.log('Login bem-sucedido!');
-            if (user.hasOwnProperty('dataDeNascimento')) { // Diferencia os usuários através da Data de Nascimento (um dado que só clientes inserem)
-                return new Cliente(user.nome, user.dataDeNascimento, user.cpf, user.email, user.senha, user.username);
+            if (user.hasOwnProperty('dataDeNascimento')) { // Verifica se é um cliente
+                return new Cliente(user.id, user.nome, user.dataDeNascimento, user.cpf, user.email, user.endereco, user.senha, user.username);
             } else {
-                return new Funcionario(user.nome, user.cpf, user.email, user.senha, user.username);
+                return new Funcionario(user.id, user.nome, user.cpf, user.email, user.senha, user.username);
             }
         } else {
             console.log('Usuário ou senha incorretos.');
             return null;
         }
-    }
+    }    
 
     register() { // Função para cadastro 
         console.log('\nEscolha o novo status do produto: ');
@@ -203,7 +202,7 @@ class Sistema {
             }
 
             const endereco = readlineSync.question('Digite seu endereço para entrega de pedidos: '); // Corrigido
-            const usuario = new Cliente(nome, dataDeNascimento, cpf, email, endereco, password, username);
+            const usuario = new Cliente(gerarIDuser(), nome, dataDeNascimento, cpf, email, endereco, password, username);
 
             usersData.push(usuario);
             saveData('./users.json', usersData); // Salvar os dados no arquivo JSON para armazenamento
@@ -212,7 +211,7 @@ class Sistema {
             console.log('Dados do novo usuário:', usuario); // Mostrar os dados do novo usuário
 
         } else if (tipo === 'funcionario') {
-            const usuario = new Funcionario(nome, cpf, email, password, username);
+            const usuario = new Funcionario(gerarIDuser(), nome, cpf, email, password, username);
 
             usersData.push(usuario);
             saveData('./users.json', usersData); // Salvar os dados no arquivo JSON para armazenamento
@@ -322,48 +321,117 @@ class Sistema {
 
     modifyUserData(user) { // Função para modificar os dados do usuário
         while (true) {
-            console.log('\nQual dado você deseja modificar?');  // Mudança feita para que ele possa escolher qual dado deseja modificar
-            console.log('1. Nome');
-            console.log('2. Email');
-            console.log('3. Senha');
-            console.log('4. CPF');
-            console.log('5. Endereço');
-            console.log('6. Nome de Usuário');
-            console.log('7. Sair');
+            
 
-            const choice = readlineSync.question('Escolha uma opção: ');
+            if (user.hasOwnProperty('dataDeNascimento')) { // Se o usuário for cliente, adicionar a pergunta da data de nascimento e do endereço
+                console.log('\nQual dado você deseja modificar?');  // Mudança feita para que ele possa escolher qual dado deseja modificar
+                console.log('1. Nome');
+                console.log('2. Email');
+                console.log('3. Senha');
+                console.log('4. CPF');
+                console.log('5. Nome de Usuário');
+                console.log('6. Endereço');
+                console.log('7. Data de Nascimento');
+                console.log('8. Sair');
 
-            switch (choice) { // Switch case para cada opção de modificação de dados do usuário, pedindo o novo e mostrando o atual
-                case '1':
-                    user.nome = readlineSync.question(`Digite seu novo nome (atual: ${user.nome}): `) || user.nome;
-                    console.log('Nome atualizado com sucesso!');
-                    break;
-                case '2':
-                    user.email = readlineSync.question(`Digite seu novo email (atual: ${user.email}): `) || user.email;
-                    console.log('Email atualizado com sucesso!');
-                    break;
-                case '3':
-                    user.senha = readlineSync.question('Digite sua nova senha: ', { hideEchoBack: true }) || user.senha;
-                    console.log('Senha atualizada com sucesso!');
-                    break;
-                case '4':
-                    user.cpf = readlineSync.question(`Digite seu novo CPF (atual: ${user.cpf}): `) || user.cpf;
-                    console.log('CPF atualizado com sucesso!');
-                    break;
-                case '5':
-                    user.endereco = readlineSync.question(`Digite seu novo endereço (atual: ${user.endereco}): `) || user.endereco;
-                    console.log('Endereço atualizado com sucesso!');
-                    break;
-                case '6':
-                    user.username = readlineSync.question(`Digite seu novo nome de usuário (atual: ${user.username}): `) || user.username;
-                    console.log('Nome de usuário atualizado com sucesso!');
-                    break;
-                case '7':
-                    saveData('./users.json', usersData);
-                    console.log('Saindo da modificação de dados.');
-                    return;
-                default:
-                    console.log('Opção inválida. Tente novamente.');
+                const choice = readlineSync.question('Escolha uma opção: ');
+
+                switch (choice) { // Switch case para cada opção de modificação de dados do usuário, pedindo o novo e mostrando o atual
+                    case '1':
+                        user.nome = readlineSync.question(`Digite seu novo nome (atual: ${user.nome}): `) || user.nome;
+                        console.log('Nome atualizado com sucesso!');
+                        break;
+                    case '2':
+                        user.email = readlineSync.question(`Digite seu novo email (atual: ${user.email}): `) || user.email;
+                        console.log('Email atualizado com sucesso!');
+                        if (!emailRegex.test(user.email)) { // Checando se o email é válido
+                            console.log('Email inválido.');
+                            return;
+                        }
+                        break;
+                    case '3':
+                        user.senha = readlineSync.question('Digite sua nova senha: ', { hideEchoBack: true }) || user.senha;
+                        console.log('Senha atualizada com sucesso!');
+                        break;
+                    case '4':
+                        user.cpf = readlineSync.question(`Digite seu novo CPF (atual: ${user.cpf}): `) || user.cpf;
+                        console.log('CPF atualizado com sucesso!');
+                        if (!cpfRegex.test(user.cpf)) { // Checando se o CPF é válido
+                            console.log('CPF inválido. Deve conter exatamente 11 dígitos.');
+                            return;
+                        }
+                        break;
+                    case '5':
+                        user.username = readlineSync.question(`Digite seu novo nome de usuário (atual: ${user.username}): `) || user.username;
+                        console.log('Nome de usuário atualizado com sucesso!');
+                        break;
+                    case '6':
+                        user.endereco = readlineSync.question(`Digite seu novo endereço (atual: ${user.endereco}): `) || user.endereco;
+                        console.log('Endereço atualizado com sucesso!');
+                        break;
+                    case '7':
+                        user.dataDeNascimento = readlineSync.question(`Digite sua nova data de nascimento (atual: ${user.dataDeNascimento}): `) || user.dataDeNascimento;
+                        console.log('Data de Nascimento atualizada com sucesso!');
+                        if (!dataNascimentoRegex.test(user.dataDeNascimento) || !isValidDate(dataDeNascimento)) { // Checando se a data de nascimento é válida
+                            console.log('Data de Nascimento inválida. Use o formato DD/MM/YYYY.');
+                            return;
+                        }
+                        break;
+                    case '8':
+                        saveData('./users.json', usersData);
+                        console.log('Saindo da modificação de dados.');
+                        return;
+                    default:
+                        console.log('Opção inválida. Tente novamente.');
+                }
+            }
+            else {
+                console.log('\nQual dado você deseja modificar?');  // Mudança feita para que ele possa escolher qual dado deseja modificar
+                console.log('1. Nome');
+                console.log('2. Email');
+                console.log('3. Senha');
+                console.log('4. CPF');
+                console.log('5. Nome de Usuário');
+                console.log('6. Sair');
+
+                const choice = readlineSync.question('Escolha uma opção: ');
+
+                switch (choice) { // Switch case para cada opção de modificação de dados do usuário, pedindo o novo e mostrando o atual
+                    case '1':
+                        user.nome = readlineSync.question(`Digite seu novo nome (atual: ${user.nome}): `) || user.nome;
+                        console.log('Nome atualizado com sucesso!');
+                        break;
+                    case '2':
+                        user.email = readlineSync.question(`Digite seu novo email (atual: ${user.email}): `) || user.email;
+                        console.log('Email atualizado com sucesso!');
+                        if (!emailRegex.test(user.email)) { // Checando se o email é válido
+                            console.log('Email inválido.');
+                            return;
+                        }
+                        break;
+                    case '3':
+                        user.senha = readlineSync.question('Digite sua nova senha: ', { hideEchoBack: true }) || user.senha;
+                        console.log('Senha atualizada com sucesso!');
+                        break;
+                    case '4':
+                        user.cpf = readlineSync.question(`Digite seu novo CPF (atual: ${user.cpf}): `) || user.cpf;
+                        console.log('CPF atualizado com sucesso!');
+                        if (!cpfRegex.test(user.cpf)) { // Checando se o CPF é válido
+                            console.log('CPF inválido. Deve conter exatamente 11 dígitos.');
+                            return;
+                        }
+                        break;
+                    case '5':
+                        user.username = readlineSync.question(`Digite seu novo nome de usuário (atual: ${user.username}): `) || user.username;
+                        console.log('Nome de usuário atualizado com sucesso!');
+                        break;
+                    case '6':
+                        saveData('./users.json', usersData);
+                        console.log('Saindo da modificação de dados.');
+                        return;
+                    default:
+                        console.log('Opção inválida. Tente novamente.');
+                }
             }
 
             const userIndex = usersData.findIndex(u => u.id === user.id);
@@ -399,9 +467,10 @@ class Sistema {
 
         console.log('Escolha o novo status do produto: ');
         console.log('1. Cancelado');
-        console.log('2. Em andamento');
-        console.log('3. Entregue');
-        console.log('4. Sair');
+        console.log('2. Pedido pendente');
+        console.log('3. Realizado');
+        console.log('4. Pedido Adiado');
+        console.log('5. Sair');
 
         const choice = readlineSync.question('Escolha uma opção (nº): ');
 
@@ -412,12 +481,15 @@ class Sistema {
                 order.status = 'Cancelado';
                 break;
             case '2':
-                order.status = 'Em andamento';
+                order.status = 'Pedido pendente';
                 break;
             case '3':
-                order.status = 'Entregue';
+                order.status = 'Realizado';
                 break;
             case '4':
+                order.status = 'Pedido Adiado';
+                break;
+            case '5':
                 console.log('Saindo da modificação de status. Ele permancerá o mesmo');
                 return;
             default:
@@ -469,7 +541,7 @@ class Sistema {
                 console.log('Opção inválida. Tente novamente.'); // Caso a opção seja inválida
         }
 
-        const produto = new Produto(dataDeValidade, preco, quantidadeNoEstoque, nome, descricao, alergenos, tipoDeProduto);
+        const produto = new Produto(gerarIDproduto(), dataDeValidade, preco, quantidadeNoEstoque, nome, descricao, alergenos, tipoDeProduto);
 
         stockData.push(produto);
         saveData('./stock.json', stockData);
@@ -626,13 +698,11 @@ class Sistema {
                 console.log('Opção inválida. Tente novamente.');
                 return;
         }
-
-        
-        const pedidoId = gerarIDpedido();
+    
         const pedido = {
-            id: pedidoId,
+            id: gerarIDpedido(),
             clienteId: cliente.id, 
-            status: 'Em andamento',
+            status: 'Pedido pendente',     // Status inicial do pedido
             data: new Date().toISOString(),
             tipoDePedido: tipoDePedido,
             produtoId: produtoId,
@@ -672,8 +742,14 @@ class Sistema {
         console.log('Pedido cancelado com sucesso!');
     }
 
-    viewClientOrders(cliente) { // Função para visualizar os pedidos do cliente (pelo funcionário)
+    viewClientOrders(cliente) { // Função para visualizar os pedidos do cliente (ordem cronológica)
+        // Filtra os pedidos do cliente
         const clientOrders = ordersData.filter(o => o.clienteId === cliente.id);
+    
+        // Ordena os pedidos por data (cronologicamente)
+        clientOrders.sort((a, b) => new Date(a.orderDate) - new Date(b.orderDate));
+    
+        // Exibe os pedidos ordenados
         console.log('Seus pedidos:', clientOrders);
     }
 

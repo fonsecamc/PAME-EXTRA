@@ -3,12 +3,12 @@
     "id": "1",
     "nome": "Mário Rodrigues",
     "cpf": "00000000000",
-    "email": "marior@gmail.com",
+    "email": "m",
     "senha": "a",
     "username": "marior"
   },
   {
-    "id": "3",
+    "id": "2",
     "nome": "Ana Costa",
     "dataDeNascimento": "10/09/2000",
     "cpf": "11111111111",
@@ -26,5 +26,33 @@
     "endereco": "Rua Getúlio Vargas, 76",
     "senha": "gh89#",
     "username": "mourah"
+  },
+  {
+    "id": "4",
+    "nome": "Luidgi Cornélio",
+    "dataDeNascimento": "10/09/2000",
+    "cpf": "44444444444",
+    "email": "luidgi@cornelio.com",
+    "endereco": "Rua Mário, 00",
+    "senha": "c",
+    "username": "luidgi"
+  },
+  {
+    "id": "5",
+    "nome": "Suzan Thomas",
+    "cpf": "66666666666",
+    "email": "thomas@gmail.com",
+    "senha": "d",
+    "username": "suzan"
+  },
+  {
+    "id": "6",
+    "nome": "Bruno Souza",
+    "dataDeNascimento": "10/09/1988",
+    "cpf": "99999999999",
+    "email": "bruninho@volei.com",
+    "endereco": "Rua Saquarema, 5",
+    "senha": "o",
+    "username": "bruno"
   }
 ]
