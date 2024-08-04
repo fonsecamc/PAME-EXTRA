@@ -4,14 +4,14 @@
     "clienteId": "4",
     "status": "Pedido Adiado",
     "data": "2024-08-03T21:03:51.074Z",
-    "tipoDePedido": "Entrega",
+    "tipoDePedido": "Realizado",
     "produtoId": "2",
     "quantidade": 1
   },
   {
     "id": "3",
     "clienteId": "4",
-    "status": "Em andamento",
+    "status": "Pedido pendente",
     "data": "2024-08-03T21:26:14.817Z",
     "tipoDePedido": "Restaurante",
     "produtoId": "1",
@@ -20,7 +20,7 @@
   {
     "id": "4",
     "clienteId": "2",
-    "status": "Entregue",
+    "status": "Pedido pendente",
     "data": "2024-08-04T00:51:37.771Z",
     "tipoDePedido": "Restaurante",
     "produtoId": "5",
@@ -30,7 +30,7 @@
   {
     "id": "5",
     "clienteId": "2",
-    "status": "Em andamento",
+    "status": "Pedido pendente",
     "data": "2024-08-04T00:59:06.696Z",
     "tipoDePedido": "Retirada",
     "produtoId": "2",
