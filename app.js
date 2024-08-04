@@ -108,7 +108,7 @@ class Sistema {
 
         while (true) {  // Loop principal de cadastro, login e opção de saída do programa
             if (!currentUser) {
-                console.log('\nBem-vindo ao sistema!'); // Mudança feita para que ele possa escolher entre login e cadastro
+                console.log('\nSeja bem-vindo ao restaurante Sabor & Arte!'); // Mudança feita para que ele possa escolher entre login e cadastro
                 console.log('1. Login');
                 console.log('2. Cadastrar');
                 console.log('3. Sair');
